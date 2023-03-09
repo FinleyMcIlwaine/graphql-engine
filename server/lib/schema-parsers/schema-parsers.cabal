@@ -9,7 +9,7 @@ author:         Hasura, Inc.
 maintainer:     Hasura, Inc.
 build-type:     Simple
 extra-source-files:
-    ../../../LICENSE
+    LICENSE
 
 source-repository head
   type: git
