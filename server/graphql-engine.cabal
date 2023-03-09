@@ -119,6 +119,7 @@ extra-source-files:
   src-rsr/mssql/mssql_insert_trigger.sql.shakespeare
   src-rsr/mssql/mssql_source_migrations/1_to_2.sql
   src-rsr/mssql/mssql_source_migrations/2_to_3.sql
+  src-rsr/mssql/mssql_source_migrations/3_to_4.sql
   src-rsr/mssql/mssql_table_metadata.sql
   src-rsr/mssql/mssql_unlock_events.sql.shakespeare
   src-rsr/mssql/mssql_update_trigger.sql.shakespeare
