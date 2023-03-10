@@ -1,0 +1,24 @@
+-- This configuration is used by `dev.sh graphql-engine --prof-eventlog-socket`.
+--
+-- TODO COMING UP: We would like to turn on these flags always. But for now the
+--   resulting binary size increase is too large. This will improve in GHC 9.4, but
+--   also we may need to wait until further work on compressing IPE info lands.
+--   (Likewise we might want to always link with -eventlog)
+
+import: cabal/dev-sh-optimized.project.local
+
+source-repository-package
+  type: git
+  location: https://github.com/FinleyMcIlwaine/ghc-eventlog-socket
+  tag: e8cbc1a554d5146d4d0142e700be8ae3850e8d6a
+
+-- apply these to all LOCAL packages
+-- TODO would be nice to refactor other dev-sh.project.local to use program-options' as well (and force cabal 3.8)
+program-options
+    ghc-options: -fdistinct-constructor-tables -finfo-table-map
+    -- For each module, STG will be dumped to:
+    --     dist-newstyle/**/*.dump-stg-final
+    ghc-options: -ddump-stg-final -ddump-to-file
+
+package graphql-engine
+    ghc-options: -eventlog
