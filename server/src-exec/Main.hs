@@ -15,6 +15,7 @@ import Data.Time.Clock (getCurrentTime)
 import Data.Time.Clock.POSIX (getPOSIXTime)
 import Database.PG.Query qualified as PG
 import GHC.Debug.Stub
+import GHC.Eventlog.Socket qualified
 import GHC.TypeLits (Symbol)
 import Hasura.App
 import Hasura.App.State
@@ -39,6 +40,7 @@ import System.Posix.Signals qualified as Signals
 {-# ANN main ("HLINT: ignore Use env_from_function_argument" :: String) #-}
 main :: IO ()
 main = maybeWithGhcDebug $ do
+  maybeWithGhcEventlogSocket
   catch
     do
       env <- Env.getEnvironment
@@ -163,3 +165,21 @@ maybeWithGhcDebug theMain = do
       putStrLn "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
       withGhcDebug theMain
     _ -> theMain
+
+-- | 'GHC.Eventlog.Socket.start' but conditional on the environment variable
+-- @HASURA_GHC_EVENTLOG_SOCKET=true@. When this is set a debug socket will be
+-- opened, otherwise the server will start normally. This must only be called
+-- once.
+maybeWithGhcEventlogSocket :: IO ()
+maybeWithGhcEventlogSocket = do
+  lookupEnv "HASURA_GHC_EVENTLOG_SOCKET" >>= \case
+    Just "true" -> do
+      socketPath <- do
+        lookupEnv "GHC_EVENTLOG_SOCKET" >>= \case
+          Just p -> return p
+          _      -> return "/tmp/ghc-eventlog-socket"
+      putStrLn "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+      putStrLn "!!!!!   Opening a ghc-eventlog socket  !!!!!"
+      putStrLn "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+      GHC.Eventlog.Socket.start socketPath
+    _ -> return ()

@@ -36,16 +36,17 @@ Usage:   $0 <COMMAND>
 
 Available COMMANDs:
 
-  graphql-engine [--optimized | --prof-ticky | --prof-heap-infomap |--prof-ghc-debug] [-- <extra_args>]
-      
+  graphql-engine [--optimized | --prof-ticky | --prof-heap-infomap | --prof-ghc-debug | --prof-eventlog-socket] [-- <extra_args>]
+
     Launch graphql-engine, connecting to a database launched with
     '$0 postgres'. <extra_args> will be passed to graphql-engine directly.
-    
-        --optimized         : will launch a prod-like optimized build
-        --prof-ticky        : "Ticky ticky" profiling for accounting of allocations (see: cabal/README.md)
-        --prof-heap-infomap : Heap profiling (see: cabal/README.md)
-        --prof-ghc-debug    : Enable ghc-debug (see: cabal/README.md)
-        --prof-time         : NOT YET IMPLEMENTED (TODO After 9.4) (see: cabal/README.md)
+
+        --optimized            : will launch a prod-like optimized build
+        --prof-ticky           : "Ticky ticky" profiling for accounting of allocations (see: cabal/README.md)
+        --prof-heap-infomap    : Heap profiling (see: cabal/README.md)
+        --prof-ghc-debug       : Enable ghc-debug (see: cabal/README.md)
+        --prof-eventlog-socket : Enable eventlog-socket (see: cabal/README.md)
+        --prof-time            : NOT YET IMPLEMENTED (TODO After 9.4) (see: cabal/README.md)
 
   postgres
     Launch a postgres container suitable for use with graphql-engine, watch its
@@ -105,7 +106,7 @@ case "${1-}" in
 
       --prof-ticky)
       echo_warn "This will delete any 'graphql-engine.ticky' and perform significant recompilation. Ok?"
-      echo_warn  "Press enter to continue [will proceed in 10s]"
+      echo_warn "Press enter to continue [will proceed in 10s]"
       read -r -t10 || true
       # Avoid confusion:
       rm -f graphql-engine.ticky
@@ -121,7 +122,7 @@ case "${1-}" in
 
       --prof-heap-infomap)
       echo_warn "This will delete any 'graphql-engine.eventlog' and 'graphql-engine.eventlog.html' and perform significant recompilation. Ok?"
-      echo_warn  "Press enter to continue [will proceed in 10s]"
+      echo_warn "Press enter to continue [will proceed in 10s]"
       read -r -t10 || true
       # Avoid confusion:
       rm -f graphql-engine.eventlog
@@ -142,13 +143,35 @@ case "${1-}" in
       echo_warn "This will require significant recompilation unless you just ran with --prof-heap-infomap "
       echo_warn "A GHC debug socket will be opened at $GHC_DEBUG_SOCKET"
       echo_warn "See examples of client code here: https://github.com/hasura/hasura-debug/"
-      echo_warn  "Press enter to continue [will proceed in 10s]"
+      echo_warn "Press enter to continue [will proceed in 10s]"
       read -r -t10 || true
       # NOTE: we just need IPE info so can re-use this:
       CABAL_PROJECT_FILE=cabal/dev-sh-prof-heap-infomap.project
       # This will open the debug socket:
       export HASURA_GHC_DEBUG=true
       HASURA_PROF_MODE=ghc-debug
+      case "${3-}" in
+          --)
+          GRAPHQL_ENGINE_EXTRA_ARGS+=( "${@:4}" )
+          ;;
+      esac
+      ;;
+
+      --prof-eventlog-socket)
+      # Used to determine socket path
+      export GHC_EVENTLOG_SOCKET=/tmp/ghc-eventlog-socket
+      echo_warn "This will delete any 'graphql-engine.eventlog' and 'graphql-engine.eventlog.html',"
+      echo_warn "open a GHC eventlog socket at $GHC_EVENTLOG_SOCKET, and perform significant recompilation. Ok?"
+      echo_warn "Press enter to continue [will proceed in 10s]"
+      read -r -t10 || true
+      # Avoid confusion:
+      rm -f graphql-engine.eventlog
+      rm -f graphql-engine.eventlog.html
+      CABAL_PROJECT_FILE=cabal/dev-sh-prof-eventlog-socket.project
+      # This will open the debug socket:
+      export HASURA_GHC_EVENTLOG_SOCKET=true
+      HASURA_PROF_MODE=ghc-eventlog-socket
+      GRAPHQL_ENGINE_EXTRA_ARGS+=( +RTS -l-agu -RTS )
       case "${3-}" in
           --)
           GRAPHQL_ENGINE_EXTRA_ARGS+=( "${@:4}" )
@@ -387,6 +410,9 @@ if [ "$MODE" = "graphql-engine" ]; then
           fi
         ;;
         ghc-debug)
+            # TODO maybe integrate snapshotting + common analysis here
+        ;;
+        ghc-eventlog-socket)
             # TODO maybe integrate snapshotting + common analysis here
         ;;
         time)
