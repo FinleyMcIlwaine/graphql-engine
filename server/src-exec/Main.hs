@@ -37,6 +37,8 @@ import System.Exit qualified as Sys
 import System.Metrics qualified as EKG
 import System.Posix.Signals qualified as Signals
 
+import Debug.Trace
+
 {-# ANN main ("HLINT: ignore Use env_from_function_argument" :: String) #-}
 main :: IO ()
 main = maybeWithGhcDebug $ do
@@ -182,4 +184,5 @@ maybeWithGhcEventlogSocket = do
       putStrLn "!!!!!   Opening a ghc-eventlog socket  !!!!!"
       putStrLn "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
       GHC.Eventlog.Socket.start socketPath
+      traceEventIO "opened eventlog socket"
     _ -> return ()
