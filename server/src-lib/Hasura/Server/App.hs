@@ -45,6 +45,12 @@ import Data.Text.Conversions (convertText)
 import Data.Text.Extended
 import Data.Text.Lazy qualified as LT
 import Data.Text.Lazy.Encoding qualified as TL
+import Debug.Trace (traceMarkerIO)
+import GHC.Profiling
+  ( startHeapProfTimer,
+    stopHeapProfTimer,
+    requestHeapCensus
+  )
 import GHC.Stats.Extended qualified as RTS
 import Hasura.App.State
 import Hasura.Backends.DataConnector.API (openApiSchema)
@@ -107,6 +113,7 @@ import System.Metrics.Json qualified as EKG
 import Text.Mustache qualified as M
 import Web.Spock.Core ((<//>))
 import Web.Spock.Core qualified as Spock
+
 
 data HandlerCtx = HandlerCtx
   { hcAppContext :: !AppContext,
@@ -1001,6 +1008,24 @@ httpApp setupHook appCtx@AppContext {..} appEnv@AppEnv {..} ekgStore = do
       liftIO performMajorGC
       stats <- liftIO RTS.getRTSStats
       Spock.json stats
+
+  -- Heap profiling endpoints
+  Spock.get "dev/heap_census" $ do
+    liftIO $ do
+      traceMarkerIO "Requesting heap census"
+      performMajorGC
+      requestHeapCensus
+    Spock.text "heap census requested"
+  Spock.get "dev/start_heap_profile" $ do
+    liftIO $ do
+      traceMarkerIO "Beginning heap profiling"
+      startHeapProfTimer
+    Spock.text "started heap profiling"
+  Spock.get "dev/stop_heap_profile" $ do
+    liftIO $ do
+      traceMarkerIO "Stopping heap profiling"
+      stopHeapProfTimer
+    Spock.text "stopped heap profiling"
 
   when (isDeveloperAPIEnabled appCtx) $ do
     Spock.get "dev/ekg" $
