@@ -12,6 +12,7 @@ where
 
 import Autodocodec (HasCodec)
 import Autodocodec qualified as AC
+import Control.Monad
 import Data.Aeson
 import Data.Attoparsec.Combinator (lookAhead)
 import Data.Attoparsec.Text

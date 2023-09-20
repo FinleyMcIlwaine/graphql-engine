@@ -11,6 +11,7 @@ module Data.Text.NonEmpty
   )
 where
 
+import Control.Monad
 import Autodocodec (HasCodec (codec), JSONCodec, bimapCodec, textCodec)
 import Data.Aeson
 import Data.Text qualified as T

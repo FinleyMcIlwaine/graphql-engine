@@ -32,6 +32,7 @@ import Control.Concurrent.STM qualified as STM
 import Control.Exception
 import Control.Immortal qualified as Immortal
 import Control.Monad.Except
+import Control.Monad.IO.Unlift
 import Control.Monad.Loops (iterateM_)
 import Control.Monad.Trans.Control qualified as MC
 import Control.Monad.Trans.Managed (ManagedT (..), allocate)
@@ -253,7 +254,7 @@ instance ToEngineLog ImmortalThreadLog Hasura where
 -- In particular 'StateT' causes problems.
 --
 -- This is the constraint you can use for functions that call 'LA.async', or 'immortal'.
-type ForkableMonadIO m = (MonadIO m, MC.MonadBaseControl IO m, LA.Forall (LA.Pure m))
+type ForkableMonadIO m = (MonadUnliftIO m, MonadIO m, MC.MonadBaseControl IO m, LA.Forall (LA.Pure m))
 
 -- TODO consider deprecating async.
 --        export something with polymorphic return type, which makes "fork and forget" difficult

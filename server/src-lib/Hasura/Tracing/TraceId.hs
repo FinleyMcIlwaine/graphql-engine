@@ -17,6 +17,7 @@ module Hasura.Tracing.TraceId
   )
 where
 
+import Control.Monad
 import Data.Aeson qualified as J
 import Data.Bits ((.|.))
 import Data.ByteString (ByteString)

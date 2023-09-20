@@ -12,6 +12,7 @@ module Hasura.Incremental.Internal.Rule
   )
 where
 
+import Control.Monad
 import Control.Arrow.Extended
 import Control.Category
 import Data.HashMap.Strict qualified as HashMap

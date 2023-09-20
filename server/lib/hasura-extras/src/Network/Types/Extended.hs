@@ -11,6 +11,7 @@ where
 import Autodocodec (HasCodec, optionalField', optionalFieldWithDefault', requiredField')
 import Autodocodec qualified as AC
 import Autodocodec.Extended (boundedEnumCodec)
+import Control.Monad
 import Data.Aeson as J
 import Data.Text qualified as T
 import Hasura.Prelude

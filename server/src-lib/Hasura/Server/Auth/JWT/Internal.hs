@@ -113,9 +113,9 @@ pubKeyToJwk pubKey = do
       X509.PubKeyEd25519 pubKeyEd ->
         return $ fromKeyMaterial $ OKPKeyMaterial (Ed25519Key pubKeyEd Nothing)
       X509.PubKeyEC pubKeyEc ->
-        case ecParametersFromX509 pubKeyEc of
-          Nothing -> Left "Error getting EC parameters from the public key"
-          Just ecKeyParameters ->
+        case ecParametersFromX509 @Error pubKeyEc of
+          Left _ -> Left "Error getting EC parameters from the public key"
+          Right ecKeyParameters ->
             return $ fromKeyMaterial $ ECKeyMaterial ecKeyParameters
       _ -> Left "This key type is not supported"
     rsaKeyParams n e =

@@ -17,10 +17,10 @@ module Hasura.GraphQL.Parser.Internal.Input
   )
 where
 
-import Control.Applicative (Alternative ((<|>)), liftA2)
+import Control.Monad
+import Control.Applicative (Alternative ((<|>)))
 import Control.Arrow ((>>>))
 import Control.Lens hiding (enum, index)
-import Control.Monad (join, unless, (<=<), (>=>))
 import Data.Aeson qualified as J
 import Data.Aeson.Key qualified as K
 import Data.Aeson.KeyMap qualified as KM

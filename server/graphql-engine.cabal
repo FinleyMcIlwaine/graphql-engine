@@ -349,6 +349,7 @@ common lib-depends
                      , transformers
                      , transformers-base
                      , unordered-containers >= 0.2.12
+                     , unliftio-core
                      , url
                      , utf8-string
                      , validation
@@ -357,6 +358,7 @@ common lib-depends
                      , wai
                      , witch
                      , witherable >= 0.4
+                     , system-cxx-std-lib
 
                      -- Encoder related
                      , uuid
@@ -1069,6 +1071,7 @@ executable graphql-engine
                    , text-conversions
                    , time
                    , unix
+                   , system-cxx-std-lib
 
 -- The OpenAPI specification for metadata is experimental and incomplete. Please
 -- do not incorporate it into essential workflows at this time.

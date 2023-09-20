@@ -11,12 +11,14 @@ where
 import Control.Monad.Except
 import Control.Monad.Reader (MonadReader, ReaderT, mapReaderT)
 import Control.Monad.State.Strict (MonadState (..), StateT, evalStateT)
+import Control.Monad.Trans
 import Data.Dependent.Map (DMap)
 import Data.Dependent.Map qualified as DM
 import Data.Functor.Identity
 import Data.GADT.Compare.Extended
 import Data.IORef
 import Data.Kind qualified as K
+import Data.Typeable ((:~:)(..))
 import Language.Haskell.TH qualified as TH
 import System.IO.Unsafe (unsafeInterleaveIO)
 import Type.Reflection (Typeable, typeRep)

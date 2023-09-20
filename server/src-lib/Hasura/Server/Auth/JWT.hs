@@ -1,4 +1,8 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE DeriveAnyClass #-}
+
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 -- |
 -- Module      : Hasura.Server.Auth.JWT
@@ -101,11 +105,16 @@ import Hasura.Server.Utils
 import Hasura.Session (SessionVariable, SessionVariableValue, UserAdminSecret (..), UserInfo, UserRoleBuild (..), mkSessionVariable, mkSessionVariablesHeaders, mkSessionVariablesText, mkUserInfo, sessionVariableToText)
 import Network.HTTP.Client.Transformable qualified as HTTP
 import Network.HTTP.Types as N
-import Network.URI (URI)
+import Network.URI (URI, URIAuth)
 import Network.Wreq qualified as Wreq
 import Web.Spock.Internal.Cookies qualified as Spock
 
 newtype RawJWT = RawJWT BL.ByteString
+
+deriving instance J.ToJSON URIAuth
+deriving instance J.FromJSON URIAuth
+deriving instance J.ToJSON URI
+deriving instance J.FromJSON URI
 
 data JWTClaimsFormat
   = JCFJson

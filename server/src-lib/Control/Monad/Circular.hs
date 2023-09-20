@@ -81,6 +81,7 @@ module Control.Monad.Circular
   )
 where
 
+import Control.Monad.Fix
 import Control.Monad.Except
 import Control.Monad.Reader
 import Control.Monad.State.Strict

@@ -9,6 +9,7 @@ where
 
 import Control.Lens
 import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
+import Control.Monad.IO.Unlift
 import Control.Monad.Morph
 import Control.Monad.Trans.Control
 import Data.IORef
@@ -33,6 +34,7 @@ newtype TraceT m a = TraceT (ReaderT (Reporter, Maybe TraceEnv) m a)
       Applicative,
       Monad,
       MonadIO,
+      MonadUnliftIO,
       MonadFix,
       MonadMask,
       MonadCatch,

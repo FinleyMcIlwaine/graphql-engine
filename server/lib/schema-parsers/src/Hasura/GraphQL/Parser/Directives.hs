@@ -25,6 +25,7 @@ module Hasura.GraphQL.Parser.Directives
   )
 where
 
+import Data.Typeable ((:~:)(..))
 import Control.Monad (guard, unless)
 import Data.Aeson.Key qualified as K
 import Data.Aeson.Types (JSONPathElement (Key))

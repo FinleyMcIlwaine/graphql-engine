@@ -66,6 +66,7 @@ import Control.Monad.Catch
     MonadMask,
     MonadThrow,
   )
+import Control.Monad.IO.Unlift
 import Control.Monad.Morph (hoist)
 import Control.Monad.Stateless
 import Control.Monad.Trans.Control (MonadBaseControl (..))
@@ -654,6 +655,7 @@ newtype AppM a = AppM (ReaderT AppEnv (TraceT IO) a)
       Applicative,
       Monad,
       MonadIO,
+      MonadUnliftIO,
       MonadFix,
       MonadCatch,
       MonadThrow,
@@ -895,6 +897,7 @@ data ShutdownAction
 runHGEServer ::
   forall m impl.
   ( MonadIO m,
+    MonadUnliftIO m,
     MonadFail m, -- only due to https://gitlab.haskell.org/ghc/ghc/-/issues/15681
     MonadFix m,
     MonadMask m,
@@ -992,6 +995,7 @@ runHGEServer setupHook appStateRef initTime startupStatusHook consoleType ekgSto
 mkHGEServer ::
   forall m impl.
   ( MonadIO m,
+    MonadUnliftIO m,
     MonadFail m, -- only due to https://gitlab.haskell.org/ghc/ghc/-/issues/15681
     MonadFix m,
     MonadMask m,

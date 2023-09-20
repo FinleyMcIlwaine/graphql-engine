@@ -9,6 +9,7 @@ module Hasura.GraphQL.Parser.Internal.TypeChecking
   )
 where
 
+import Control.Monad
 import Data.Aeson qualified as J
 import Hasura.Base.ErrorMessage
 import Hasura.Base.ToErrorValue
