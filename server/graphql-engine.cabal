@@ -185,21 +185,19 @@ common common-all
   if flag(profiling)
     cpp-options: -DPROFILING
 
-  if flag(optimize-hasura)
-    ghc-options:
-      -- This is for performance, and works in combination with '-fspecialise-aggressively'
-      -- in the graphql-engine 'executable' stanza below, and in any other dependent
-      -- executables (See mono #2610):
-      -fexpose-all-unfoldings
-      -- Use O1 over O2, as (as of writing) it improves compile times a little, without
-      -- hurting performance:
-      -O1
-      -- This seems like a better default for us, lowering memory residency without
-      -- impacting compile times too much, though it does increase binary size:
-      -funfolding-use-threshold=640
-  else
-    -- we just want to build fast:
-    ghc-options: -O0
+  ghc-options:
+    -- This is for performance, and works in combination with '-fspecialise-aggressively'
+    -- in the graphql-engine 'executable' stanza below, and in any other dependent
+    -- executables (See mono #2610):
+    -fexpose-all-unfoldings
+    -- Use O1 over O2, as (as of writing) it improves compile times a little, without
+    -- hurting performance:
+    -O1
+    -- This seems like a better default for us, lowering memory residency without
+    -- impacting compile times too much, though it does increase binary size:
+    -funfolding-use-threshold=640
+  build-depends:
+    specialist
 
   default-language: Haskell2010
   default-extensions:
@@ -280,7 +278,7 @@ common lib-depends
                      , autodocodec-openapi3
                      , barbies
                      , base
-                     , ghc-debug-stub
+                    --  , ghc-debug-stub
                      , bytestring
                      , containers
                      , data-default
@@ -1048,17 +1046,16 @@ executable graphql-engine
   import: common-all, common-exe
   import: preload-mimalloc
 
-  if flag(optimize-hasura)
-    ghc-options:
-      -- This is for performance (See mono #2610):
-      -fspecialise-aggressively
+  ghc-options:
+    -- This is for performance (See mono #2610):
+    -fspecialise-aggressively
 
   hs-source-dirs:    src-exec
   main-is:           Main.hs
   build-depends:     aeson
                    , base
                    , graphql-engine
-                   , ghc-debug-stub
+                  --  , ghc-debug-stub
                    , bytestring
                    , ekg-core
                    , ekg-prometheus

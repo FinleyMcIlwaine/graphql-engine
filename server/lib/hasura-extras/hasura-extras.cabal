@@ -4,9 +4,17 @@ version: 1.0.0
 build-type: Simple
 copyright: Hasura Inc.
 
+flag profiling
+  description: Configures the project to be profiling-compatible
+  default: False
+  manual: True
+
 library
   hs-source-dirs: src
   default-language: GHC2021
+
+  if flag(profiling)
+    cpp-options: -DPROFILING
 
   ghc-options:
     -foptimal-applicative-do
@@ -57,7 +65,6 @@ library
     , data-default-class
     , deepseq
     , exceptions
-    , ghc-heap-view
     , graphql-parser
     , hashable
     , hasura-prelude
@@ -96,6 +103,10 @@ library
     , x509-store
     , x509-system
     , x509-validation
+
+  if !flag(profiling)
+    -- ghc-heap-view can't be built with profiling
+    build-depends:     ghc-heap-view
 
 
   default-extensions:

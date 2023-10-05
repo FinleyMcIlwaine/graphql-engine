@@ -15,7 +15,7 @@ import Data.Text.Conversions (convertText)
 import Data.Time.Clock (getCurrentTime)
 import Data.Time.Clock.POSIX (getPOSIXTime)
 import Database.PG.Query qualified as PG
-import GHC.Debug.Stub
+
 import GHC.TypeLits (Symbol)
 import Hasura.App
 import Hasura.App.State
@@ -44,7 +44,7 @@ import System.Posix.Signals qualified as Signals
 
 {-# ANN main ("HLINT: ignore avoid getEnvironment" :: String) #-}
 main :: IO ()
-main = maybeWithGhcDebug $ monitorHeartbeatMain $ do
+main = monitorHeartbeatMain $ do
   catch
     do
       env <- Env.getEnvironment
@@ -162,16 +162,3 @@ data
   ServerTimestampMs ::
     AppMetricsSpec "ekg.server_timestamp_ms" 'EKG.CounterType ()
 
--- | 'withGhcDebug' but conditional on the environment variable
--- @HASURA_GHC_DEBUG=true@. When this is set a debug socket will be opened,
--- otherwise the server will start normally.  This must only be called once and
--- it's argument should be the program's @main@
-maybeWithGhcDebug :: IO a -> IO a
-maybeWithGhcDebug theMain = do
-  lookupEnv "HASURA_GHC_DEBUG" >>= \case
-    Just "true" -> do
-      putStrLn "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-      putStrLn "!!!!!    Opening a ghc-debug socket    !!!!!"
-      putStrLn "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-      withGhcDebug theMain
-    _ -> theMain
